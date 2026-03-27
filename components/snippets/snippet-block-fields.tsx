@@ -18,6 +18,7 @@ const LANGUAGES = [
     'html',
     'java',
     'javascript',
+    'jsx',
     'json',
     'kotlin',
     'markdown',
@@ -31,6 +32,7 @@ const LANGUAGES = [
     'swift',
     'toml',
     'typescript',
+    'tsx',
     'yaml',
 ];
 
