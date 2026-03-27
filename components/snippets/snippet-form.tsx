@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { CodeSnippet, Tag } from '@/lib/types';
 import type { BlockInput } from '@/lib/validations/snippet.schema';
 import { Loader2, X } from 'lucide-react';
@@ -34,7 +33,9 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
     const router = useRouter();
 
     const [title, setTitle] = useState(snippet?.title ?? '');
+
     const [selectedTags, setSelectedTags] = useState<string[]>(snippet?.tags.map((t) => t.title) ?? []);
+
     const [blocks, setBlocks] = useState<BlockInput[]>(
         snippet?.code_blocks.map((b) => ({
             title: b.title,
@@ -77,7 +78,9 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
             tags: selectedTags,
             blocks,
         };
+
         formData.set('__json', JSON.stringify(payload));
+
         formAction(formData);
     }
 
@@ -119,20 +122,6 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
                     ))}
                 </div>
                 <div className="flex gap-2">
-                    <Select onValueChange={(val) => addTag(val)} value="">
-                        <SelectTrigger className="w-[200px]" aria-label="Select existing tag">
-                            <SelectValue placeholder="Add existing tag…" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {allTags
-                                .filter((t) => !selectedTags.includes(t.title))
-                                .map((tag) => (
-                                    <SelectItem key={tag.id} value={tag.title}>
-                                        {tag.title}
-                                    </SelectItem>
-                                ))}
-                        </SelectContent>
-                    </Select>
                     <Input
                         value={newTagInput}
                         onChange={(e) => setNewTagInput(e.target.value)}
