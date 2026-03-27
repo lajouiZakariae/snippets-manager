@@ -6,35 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { LANGUAGES } from '@/data/languages';
 import type { BlockInput } from '@/lib/validations/snippet.schema';
 import { Plus, Trash2 } from 'lucide-react';
-
-const LANGUAGES = [
-    'bash',
-    'c',
-    'cpp',
-    'css',
-    'go',
-    'html',
-    'java',
-    'javascript',
-    'jsx',
-    'json',
-    'kotlin',
-    'markdown',
-    'php',
-    'python',
-    'ruby',
-    'rust',
-    'scala',
-    'shell',
-    'sql',
-    'swift',
-    'toml',
-    'typescript',
-    'tsx',
-    'yaml',
-];
 
 type Props = {
     blocks: BlockInput[];
