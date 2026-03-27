@@ -1,0 +1,201 @@
+'use client';
+
+import { useActionState, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Loader2, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { SnippetBlockFields } from './snippet-block-fields';
+import { createSnippet } from '@/actions/create-snippet';
+import { updateSnippet } from '@/actions/update-snippet';
+import type { CodeSnippet, Tag } from '@/lib/types';
+import type { BlockInput } from '@/lib/validations/snippet.schema';
+
+type Mode = 'create' | 'edit';
+
+type Props = {
+    mode: Mode;
+    snippet?: CodeSnippet;
+    allTags: Tag[];
+};
+
+const EMPTY_BLOCK: BlockInput = {
+    title: '',
+    description: '',
+    language: 'typescript',
+    code: '',
+    position: 0,
+};
+
+export function SnippetForm({ mode, snippet, allTags }: Props) {
+    const router = useRouter();
+
+    const [title, setTitle] = useState(snippet?.title ?? '');
+    const [selectedTags, setSelectedTags] = useState<string[]>(
+        snippet?.tags.map((t) => t.title) ?? []
+    );
+    const [blocks, setBlocks] = useState<BlockInput[]>(
+        snippet?.code_blocks.map((b) => ({
+            title: b.title,
+            description: b.description ?? '',
+            language: b.language,
+            code: b.code,
+            position: b.position,
+        })) ?? [{ ...EMPTY_BLOCK }]
+    );
+    const [newTagInput, setNewTagInput] = useState('');
+
+    const action = mode === 'create' ? createSnippet : updateSnippet.bind(null, snippet!.id);
+
+    const [state, formAction, isPending] = useActionState(action, null);
+
+    const errors = state && !state.success ? (state as any).errors : {};
+
+    function addTag(tag: string) {
+        const trimmed = tag.trim();
+        if (trimmed && !selectedTags.includes(trimmed)) {
+            setSelectedTags([...selectedTags, trimmed]);
+        }
+        setNewTagInput('');
+    }
+
+    function removeTag(tag: string) {
+        setSelectedTags(selectedTags.filter((t) => t !== tag));
+    }
+
+    function handleTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addTag(newTagInput);
+        }
+    }
+
+    function handleSubmit(formData: FormData) {
+        const payload = {
+            title,
+            tags: selectedTags,
+            blocks,
+        };
+        formData.set('__json', JSON.stringify(payload));
+        formAction(formData);
+    }
+
+    return (
+        <form action={handleSubmit} className="space-y-8">
+            {/* Snippet title */}
+            <div className="space-y-1.5">
+                <Label htmlFor="snippet-title">Title *</Label>
+                <Input
+                    id="snippet-title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="e.g. React custom hook for debounced value"
+                    required
+                />
+                {errors?.title?.map((e: string) => (
+                    <p key={e} className="text-destructive text-sm">
+                        {e}
+                    </p>
+                ))}
+            </div>
+
+            {/* Tags */}
+            <div className="space-y-2">
+                <Label>Tags</Label>
+                <div className="flex flex-wrap gap-2 min-h-[36px]">
+                    {selectedTags.map((tag) => (
+                        <Badge key={tag} variant="secondary" className="gap-1 pr-1">
+                            {tag}
+                            <button
+                                type="button"
+                                onClick={() => removeTag(tag)}
+                                className="ml-1 rounded-full hover:bg-muted p-0.5"
+                                aria-label={`Remove tag ${tag}`}
+                            >
+                                <X className="h-3 w-3" />
+                            </button>
+                        </Badge>
+                    ))}
+                </div>
+                <div className="flex gap-2">
+                    <Select
+                        onValueChange={(val) => addTag(val)}
+                        value=""
+                    >
+                        <SelectTrigger className="w-[200px]" aria-label="Select existing tag">
+                            <SelectValue placeholder="Add existing tag…" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {allTags
+                                .filter((t) => !selectedTags.includes(t.title))
+                                .map((tag) => (
+                                    <SelectItem key={tag.id} value={tag.title}>
+                                        {tag.title}
+                                    </SelectItem>
+                                ))}
+                        </SelectContent>
+                    </Select>
+                    <Input
+                        value={newTagInput}
+                        onChange={(e) => setNewTagInput(e.target.value)}
+                        onKeyDown={handleTagKeyDown}
+                        placeholder="New tag (press Enter)"
+                        className="flex-1"
+                        aria-label="Create new tag"
+                    />
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => addTag(newTagInput)}
+                        disabled={!newTagInput.trim()}
+                    >
+                        Add
+                    </Button>
+                </div>
+            </div>
+
+            {/* Code blocks */}
+            <SnippetBlockFields blocks={blocks} errors={errors} onChange={setBlocks} />
+
+            {/* Form-level error */}
+            {errors?._form?.map((e: string) => (
+                <p key={e} className="text-destructive text-sm">
+                    {e}
+                </p>
+            ))}
+
+            {/* Actions */}
+            <div className="flex gap-3">
+                <Button type="submit" disabled={isPending}>
+                    {isPending ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving…
+                        </>
+                    ) : mode === 'create' ? (
+                        'Create Snippet'
+                    ) : (
+                        'Save Changes'
+                    )}
+                </Button>
+                <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isPending}
+                    onClick={() => router.back()}
+                >
+                    Cancel
+                </Button>
+            </div>
+        </form>
+    );
+}
