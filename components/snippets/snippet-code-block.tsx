@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import type { CodeBlock } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { cn, copyToClipboard } from '@/lib/utils';
 import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
 
@@ -17,7 +17,7 @@ export function SnippetCodeBlock({ block, highlightedHtml }: Props) {
     const [copied, setCopied] = useState(false);
 
     async function handleCopy() {
-        await navigator.clipboard.writeText(block.code);
+        await copyToClipboard(block.code);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     }
