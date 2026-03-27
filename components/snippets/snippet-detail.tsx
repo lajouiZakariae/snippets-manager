@@ -74,8 +74,8 @@ export async function SnippetDetail({ snippet }: Props) {
 
             {/* Code blocks */}
             <div className="space-y-8">
-                {snippet.code_blocks.map((block, index) => (
-                    <SnippetCodeBlock key={block.id} block={block} highlightedHtml={highlightedBlocks[index]} />
+                {snippet.code_blocks.map((block) => (
+                    <SnippetCodeBlock key={block.id} {...block} />
                 ))}
             </div>
         </div>
