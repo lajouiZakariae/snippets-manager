@@ -5,7 +5,6 @@ import type { CodeSnippet } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
 import { Pencil } from 'lucide-react';
 import Link from 'next/link';
-import { codeToHtml } from 'shiki';
 import { DeleteSnippetButton } from './delete-snippet-button';
 import { SnippetCodeBlock } from './snippet-code-block';
 
@@ -13,21 +12,7 @@ type Props = {
     snippet: CodeSnippet;
 };
 
-async function highlightBlock(code: string, language: string): Promise<string> {
-    try {
-        return await codeToHtml(code, {
-            lang: language,
-            themes: { light: 'github-light', dark: 'github-dark' },
-        });
-    } catch {
-        // Fallback: render as plain text if language is not supported
-        return `<pre>${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`;
-    }
-}
-
 export async function SnippetDetail({ snippet }: Props) {
-    const highlightedBlocks = await Promise.all(snippet.code_blocks.map((block) => highlightBlock(block.code, block.language)));
-
     const languages = [...new Set(snippet.code_blocks.map((b) => b.language))];
 
     return (
