@@ -4,39 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import type { CodeBlock } from '@/lib/types';
-import { cn, copyToClipboard } from '@/lib/utils';
+import { copyToClipboard, highlightBlock } from '@/lib/utils';
 import { Check, Copy } from 'lucide-react';
-import { Suspense, use, useState } from 'react';
-import { codeToHtml } from 'shiki';
+import { Suspense, useState } from 'react';
+import { Code } from './code';
 
 type Props = CodeBlock;
-
-async function highlightBlock(code: string, language: string): Promise<string> {
-    try {
-        return await codeToHtml(code, {
-            lang: language,
-            themes: { light: 'github-light', dark: 'github-dark' },
-        });
-    } catch {
-        // Fallback: render as plain text if language is not supported
-        return `<pre>${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`;
-    }
-}
-
-type CodeProps = Pick<Props, 'title'> & { highlightedHtmlPromise: Promise<string> };
-
-export function Code({ title, highlightedHtmlPromise }: CodeProps) {
-    const highlightedHtml = use(highlightedHtmlPromise);
-
-    return (
-        <pre
-            role="region"
-            aria-label={`Code block: ${title}`}
-            className={cn('overflow-x-auto p-4 font-mono text-sm leading-relaxed', '[&>pre]:!bg-transparent [&>pre]:!p-0')}
-            dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-        />
-    );
-}
 
 export function SnippetCodeBlock({ title, code, language, description }: Props) {
     const [copied, setCopied] = useState(false);
