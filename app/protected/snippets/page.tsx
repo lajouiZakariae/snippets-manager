@@ -1,7 +1,7 @@
-import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { SnippetsPage } from '@/components/snippets/snippets-page';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { SnippetFilters } from '@/lib/types';
+import { Suspense } from 'react';
 
 type Props = {
     searchParams: Promise<{ title?: string; language?: string; tagId?: string }>;

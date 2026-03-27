@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import type { CodeSnippet, CodeSnippetSummary, SnippetFilters } from '@/lib/types';
 import type { CreateSnippetInput, UpdateSnippetInput } from '@/lib/validations/snippet.schema';
-import { TagsService } from './tags.service';
 import { BlocksService } from './blocks.service';
+import { TagsService } from './tags.service';
 
 export class SnippetsService {
     static async getAll(filters: SnippetFilters = {}): Promise<CodeSnippetSummary[]> {
@@ -10,13 +10,15 @@ export class SnippetsService {
 
         let query = supabase
             .from('code_snippets')
-            .select(`
+            .select(
+                `
                 id,
                 title,
                 created_at,
                 code_snippet_tags ( tag_id, tags ( id, title, created_at ) ),
                 code_blocks ( language )
-            `)
+            `,
+            )
             .order('created_at', { ascending: false });
 
         if (filters.title) {
@@ -47,9 +49,7 @@ export class SnippetsService {
 
         // Filter by tag
         if (filters.tagId) {
-            summaries = summaries.filter((s) =>
-                s.tags.some((t) => t.id === filters.tagId)
-            );
+            summaries = summaries.filter((s) => s.tags.some((t) => t.id === filters.tagId));
         }
 
         return summaries;
@@ -60,22 +60,22 @@ export class SnippetsService {
 
         const { data, error } = await supabase
             .from('code_snippets')
-            .select(`
+            .select(
+                `
                 id,
                 title,
                 created_at,
                 code_snippet_tags ( tag_id, tags ( id, title, created_at ) ),
                 code_blocks ( id, snippet_id, title, description, code, language, position, created_at )
-            `)
+            `,
+            )
             .eq('id', id)
             .single();
 
         if (error) throw new Error(error.message);
 
         const tags = (data.code_snippet_tags ?? []).map((cst: any) => cst.tags).filter(Boolean);
-        const code_blocks = [...(data.code_blocks ?? [])].sort(
-            (a: any, b: any) => a.position - b.position
-        );
+        const code_blocks = [...(data.code_blocks ?? [])].sort((a: any, b: any) => a.position - b.position);
 
         return {
             id: data.id,
@@ -90,11 +90,7 @@ export class SnippetsService {
         const supabase = await createClient();
 
         // Insert snippet
-        const { data: snippet, error: snippetError } = await supabase
-            .from('code_snippets')
-            .insert({ title: input.title })
-            .select()
-            .single();
+        const { data: snippet, error: snippetError } = await supabase.from('code_snippets').insert({ title: input.title }).select().single();
 
         if (snippetError) throw new Error(snippetError.message);
 
@@ -102,9 +98,7 @@ export class SnippetsService {
         if (input.tags && input.tags.length > 0) {
             const tags = await Promise.all(input.tags.map((t) => TagsService.upsert(t)));
             const pivotRows = tags.map((t) => ({ snippet_id: snippet.id, tag_id: t.id }));
-            const { error: pivotError } = await supabase
-                .from('code_snippet_tags')
-                .insert(pivotRows);
+            const { error: pivotError } = await supabase.from('code_snippet_tags').insert(pivotRows);
             if (pivotError) throw new Error(pivotError.message);
         }
 
@@ -118,27 +112,19 @@ export class SnippetsService {
         const supabase = await createClient();
 
         // Update snippet title
-        const { error: updateError } = await supabase
-            .from('code_snippets')
-            .update({ title: input.title })
-            .eq('id', id);
+        const { error: updateError } = await supabase.from('code_snippets').update({ title: input.title }).eq('id', id);
 
         if (updateError) throw new Error(updateError.message);
 
         // Replace tag associations
-        const { error: deleteTagsError } = await supabase
-            .from('code_snippet_tags')
-            .delete()
-            .eq('snippet_id', id);
+        const { error: deleteTagsError } = await supabase.from('code_snippet_tags').delete().eq('snippet_id', id);
 
         if (deleteTagsError) throw new Error(deleteTagsError.message);
 
         if (input.tags && input.tags.length > 0) {
             const tags = await Promise.all(input.tags.map((t) => TagsService.upsert(t)));
             const pivotRows = tags.map((t) => ({ snippet_id: id, tag_id: t.id }));
-            const { error: pivotError } = await supabase
-                .from('code_snippet_tags')
-                .insert(pivotRows);
+            const { error: pivotError } = await supabase.from('code_snippet_tags').insert(pivotRows);
             if (pivotError) throw new Error(pivotError.message);
         }
 

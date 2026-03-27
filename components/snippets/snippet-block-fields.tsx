@@ -1,19 +1,13 @@
 'use client';
 
-import { Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import type { BlockInput } from '@/lib/validations/snippet.schema';
+import { Plus, Trash2 } from 'lucide-react';
 
 const LANGUAGES = [
     'bash',
@@ -53,19 +47,12 @@ export function SnippetBlockFields({ blocks, errors, onChange }: Props) {
     }
 
     function addBlock() {
-        onChange([
-            ...blocks,
-            { title: '', description: '', language: 'typescript', code: '', position: blocks.length },
-        ]);
+        onChange([...blocks, { title: '', description: '', language: 'typescript', code: '', position: blocks.length }]);
     }
 
     function removeBlock(index: number) {
         if (blocks.length <= 1) return;
-        onChange(
-            blocks
-                .filter((_, i) => i !== index)
-                .map((b, i) => ({ ...b, position: i }))
-        );
+        onChange(blocks.filter((_, i) => i !== index).map((b, i) => ({ ...b, position: i })));
     }
 
     function moveBlock(index: number, direction: 'up' | 'down') {
@@ -88,10 +75,8 @@ export function SnippetBlockFields({ blocks, errors, onChange }: Props) {
 
             {blocks.map((block, index) => (
                 <Card key={index}>
-                    <CardHeader className="flex flex-row items-center justify-between py-3 px-4 bg-muted/30 border-b">
-                        <span className="text-sm font-medium text-muted-foreground">
-                            Block {index + 1}
-                        </span>
+                    <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30 px-4 py-3">
+                        <span className="text-sm font-medium text-muted-foreground">Block {index + 1}</span>
                         <div className="flex items-center gap-1">
                             <Button
                                 type="button"
@@ -139,10 +124,7 @@ export function SnippetBlockFields({ blocks, errors, onChange }: Props) {
                             </div>
                             <div className="space-y-1.5">
                                 <Label htmlFor={`block-language-${index}`}>Language *</Label>
-                                <Select
-                                    value={block.language}
-                                    onValueChange={(val) => updateBlock(index, { language: val })}
-                                >
+                                <Select value={block.language} onValueChange={(val) => updateBlock(index, { language: val })}>
                                     <SelectTrigger id={`block-language-${index}`}>
                                         <SelectValue placeholder="Select language" />
                                     </SelectTrigger>
@@ -159,8 +141,7 @@ export function SnippetBlockFields({ blocks, errors, onChange }: Props) {
 
                         <div className="space-y-1.5">
                             <Label htmlFor={`block-description-${index}`}>
-                                Description{' '}
-                                <span className="text-muted-foreground text-xs">(optional)</span>
+                                Description <span className="text-xs text-muted-foreground">(optional)</span>
                             </Label>
                             <Textarea
                                 id={`block-description-${index}`}

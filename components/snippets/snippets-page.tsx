@@ -1,12 +1,12 @@
-import Link from 'next/link';
-import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SnippetsFilters } from './snippets-filters';
-import { SnippetsListing } from './snippets-listing';
 import { SnippetsService } from '@/lib/services/snippets.service';
 import { TagsService } from '@/lib/services/tags.service';
 import type { SnippetFilters } from '@/lib/types';
+import { Plus } from 'lucide-react';
+import Link from 'next/link';
 import { Suspense } from 'react';
+import { SnippetsFilters } from './snippets-filters';
+import { SnippetsListing } from './snippets-listing';
 
 type Props = {
     filters: SnippetFilters;

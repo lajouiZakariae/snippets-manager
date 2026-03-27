@@ -1,8 +1,8 @@
 'use server';
 
+import { SnippetsService } from '@/lib/services/snippets.service';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { SnippetsService } from '@/lib/services/snippets.service';
 
 export async function deleteSnippet(id: string) {
     try {

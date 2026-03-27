@@ -1,7 +1,6 @@
 'use client';
 
-import { useTransition } from 'react';
-import { Loader2 } from 'lucide-react';
+import { deleteSnippet } from '@/actions/delete-snippet';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -12,7 +11,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { deleteSnippet } from '@/actions/delete-snippet';
+import { Loader2 } from 'lucide-react';
+import { useTransition } from 'react';
 
 type Props = {
     snippetId: string;
@@ -22,13 +22,7 @@ type Props = {
     onDeleteStart?: () => void;
 };
 
-export function DeleteSnippetDialog({
-    snippetId,
-    snippetTitle,
-    open,
-    onOpenChange,
-    onDeleteStart,
-}: Props) {
+export function DeleteSnippetDialog({ snippetId, snippetTitle, open, onOpenChange, onDeleteStart }: Props) {
     const [isPending, startTransition] = useTransition();
 
     function handleConfirm() {
@@ -44,8 +38,7 @@ export function DeleteSnippetDialog({
                 <AlertDialogHeader>
                     <AlertDialogTitle>Delete snippet?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Are you sure you want to delete &quot;{snippetTitle}&quot;? This action cannot be
-                        undone.
+                        Are you sure you want to delete &quot;{snippetTitle}&quot;? This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

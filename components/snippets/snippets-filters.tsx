@@ -1,19 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { Search, X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Tag } from '@/lib/types';
+import { Search, X } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type Props = {
     languages: string[];
@@ -42,7 +35,7 @@ export function SnippetsFilters({ languages, tags }: Props) {
             }
             return `${pathname}?${params.toString()}`;
         },
-        [pathname, searchParams]
+        [pathname, searchParams],
     );
 
     // Debounce title filter
@@ -59,10 +52,7 @@ export function SnippetsFilters({ languages, tags }: Props) {
     const currentLanguage = searchParams.get('language') ?? ALL_VALUE;
     const currentTagId = searchParams.get('tagId') ?? ALL_VALUE;
 
-    const hasFilters =
-        !!searchParams.get('title') ||
-        !!searchParams.get('language') ||
-        !!searchParams.get('tagId');
+    const hasFilters = !!searchParams.get('title') || !!searchParams.get('language') || !!searchParams.get('tagId');
 
     function clearFilters() {
         setTitle('');
@@ -71,8 +61,8 @@ export function SnippetsFilters({ languages, tags }: Props) {
 
     return (
         <div className="flex flex-wrap items-center gap-3">
-            <div className="relative flex-1 min-w-[180px]">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="relative min-w-[180px] flex-1">
+                <Search className="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                     placeholder="Search snippets…"
                     value={title}
@@ -82,12 +72,7 @@ export function SnippetsFilters({ languages, tags }: Props) {
                 />
             </div>
 
-            <Select
-                value={currentLanguage}
-                onValueChange={(val) =>
-                    router.push(buildUrl({ language: val === ALL_VALUE ? null : val }))
-                }
-            >
+            <Select value={currentLanguage} onValueChange={(val) => router.push(buildUrl({ language: val === ALL_VALUE ? null : val }))}>
                 <SelectTrigger className="w-[160px]" aria-label="Filter by language">
                     <SelectValue placeholder="Language" />
                 </SelectTrigger>
@@ -101,12 +86,7 @@ export function SnippetsFilters({ languages, tags }: Props) {
                 </SelectContent>
             </Select>
 
-            <Select
-                value={currentTagId}
-                onValueChange={(val) =>
-                    router.push(buildUrl({ tagId: val === ALL_VALUE ? null : val }))
-                }
-            >
+            <Select value={currentTagId} onValueChange={(val) => router.push(buildUrl({ tagId: val === ALL_VALUE ? null : val }))}>
                 <SelectTrigger className="w-[150px]" aria-label="Filter by tag">
                     <SelectValue placeholder="Tag" />
                 </SelectTrigger>

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { DeleteSnippetDialog } from './delete-snippet-dialog';
 
 type Props = {
@@ -19,12 +19,7 @@ export function DeleteSnippetButton({ snippetId, snippetTitle }: Props) {
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete
             </Button>
-            <DeleteSnippetDialog
-                snippetId={snippetId}
-                snippetTitle={snippetTitle}
-                open={open}
-                onOpenChange={setOpen}
-            />
+            <DeleteSnippetDialog snippetId={snippetId} snippetTitle={snippetTitle} open={open} onOpenChange={setOpen} />
         </>
     );
 }

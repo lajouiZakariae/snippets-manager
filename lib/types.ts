@@ -39,7 +39,4 @@ export type SnippetFilters = {
     tagId?: string;
 };
 
-export type ActionState =
-    | { success: true }
-    | { success: false; errors: Record<string, string[]> }
-    | null;
+export type ActionState = { success: true } | { success: false; errors: Record<string, string[]> } | null;

@@ -7,10 +7,7 @@ export class BlocksService {
         const supabase = await createClient();
 
         // Delete all existing blocks for this snippet
-        const { error: deleteError } = await supabase
-            .from('code_blocks')
-            .delete()
-            .eq('snippet_id', snippetId);
+        const { error: deleteError } = await supabase.from('code_blocks').delete().eq('snippet_id', snippetId);
 
         if (deleteError) throw new Error(deleteError.message);
 
@@ -26,10 +23,7 @@ export class BlocksService {
             position: block.position ?? index,
         }));
 
-        const { data, error: insertError } = await supabase
-            .from('code_blocks')
-            .insert(rows)
-            .select();
+        const { data, error: insertError } = await supabase.from('code_blocks').insert(rows).select();
 
         if (insertError) throw new Error(insertError.message);
         return data ?? [];

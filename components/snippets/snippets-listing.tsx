@@ -1,8 +1,8 @@
-import Link from 'next/link';
-import { Code2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SnippetCard } from './snippet-card';
 import type { CodeSnippetSummary } from '@/lib/types';
+import { Code2 } from 'lucide-react';
+import Link from 'next/link';
+import { SnippetCard } from './snippet-card';
 
 type Props = {
     snippets: CodeSnippetSummary[];
@@ -15,9 +15,7 @@ export function SnippetsListing({ snippets }: Props) {
                 <Code2 className="h-12 w-12 text-muted-foreground" />
                 <div>
                     <p className="text-lg font-medium">No snippets found</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Create your first snippet to get started.
-                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">Create your first snippet to get started.</p>
                 </div>
                 <Button asChild>
                     <Link href="/protected/snippets/new">Create your first snippet</Link>

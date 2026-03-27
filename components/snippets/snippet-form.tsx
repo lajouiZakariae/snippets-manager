@@ -1,24 +1,18 @@
 'use client';
 
-import { useActionState, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Loader2, X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { SnippetBlockFields } from './snippet-block-fields';
 import { createSnippet } from '@/actions/create-snippet';
 import { updateSnippet } from '@/actions/update-snippet';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { CodeSnippet, Tag } from '@/lib/types';
 import type { BlockInput } from '@/lib/validations/snippet.schema';
+import { Loader2, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useActionState, useState } from 'react';
+import { SnippetBlockFields } from './snippet-block-fields';
 
 type Mode = 'create' | 'edit';
 
@@ -40,9 +34,7 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
     const router = useRouter();
 
     const [title, setTitle] = useState(snippet?.title ?? '');
-    const [selectedTags, setSelectedTags] = useState<string[]>(
-        snippet?.tags.map((t) => t.title) ?? []
-    );
+    const [selectedTags, setSelectedTags] = useState<string[]>(snippet?.tags.map((t) => t.title) ?? []);
     const [blocks, setBlocks] = useState<BlockInput[]>(
         snippet?.code_blocks.map((b) => ({
             title: b.title,
@@ -50,7 +42,7 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
             language: b.language,
             code: b.code,
             position: b.position,
-        })) ?? [{ ...EMPTY_BLOCK }]
+        })) ?? [{ ...EMPTY_BLOCK }],
     );
     const [newTagInput, setNewTagInput] = useState('');
 
@@ -102,7 +94,7 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
                     required
                 />
                 {errors?.title?.map((e: string) => (
-                    <p key={e} className="text-destructive text-sm">
+                    <p key={e} className="text-sm text-destructive">
                         {e}
                     </p>
                 ))}
@@ -111,14 +103,14 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
             {/* Tags */}
             <div className="space-y-2">
                 <Label>Tags</Label>
-                <div className="flex flex-wrap gap-2 min-h-[36px]">
+                <div className="flex min-h-[36px] flex-wrap gap-2">
                     {selectedTags.map((tag) => (
                         <Badge key={tag} variant="secondary" className="gap-1 pr-1">
                             {tag}
                             <button
                                 type="button"
                                 onClick={() => removeTag(tag)}
-                                className="ml-1 rounded-full hover:bg-muted p-0.5"
+                                className="ml-1 rounded-full p-0.5 hover:bg-muted"
                                 aria-label={`Remove tag ${tag}`}
                             >
                                 <X className="h-3 w-3" />
@@ -127,10 +119,7 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
                     ))}
                 </div>
                 <div className="flex gap-2">
-                    <Select
-                        onValueChange={(val) => addTag(val)}
-                        value=""
-                    >
+                    <Select onValueChange={(val) => addTag(val)} value="">
                         <SelectTrigger className="w-[200px]" aria-label="Select existing tag">
                             <SelectValue placeholder="Add existing tag…" />
                         </SelectTrigger>
@@ -152,12 +141,7 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
                         className="flex-1"
                         aria-label="Create new tag"
                     />
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => addTag(newTagInput)}
-                        disabled={!newTagInput.trim()}
-                    >
+                    <Button type="button" variant="outline" onClick={() => addTag(newTagInput)} disabled={!newTagInput.trim()}>
                         Add
                     </Button>
                 </div>
@@ -168,7 +152,7 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
 
             {/* Form-level error */}
             {errors?._form?.map((e: string) => (
-                <p key={e} className="text-destructive text-sm">
+                <p key={e} className="text-sm text-destructive">
                     {e}
                 </p>
             ))}
@@ -187,12 +171,7 @@ export function SnippetForm({ mode, snippet, allTags }: Props) {
                         'Save Changes'
                     )}
                 </Button>
-                <Button
-                    type="button"
-                    variant="outline"
-                    disabled={isPending}
-                    onClick={() => router.back()}
-                >
+                <Button type="button" variant="outline" disabled={isPending} onClick={() => router.back()}>
                     Cancel
                 </Button>
             </div>

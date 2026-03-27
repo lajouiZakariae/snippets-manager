@@ -1,9 +1,9 @@
 'use server';
 
+import { SnippetsService } from '@/lib/services/snippets.service';
+import { UpdateSnippetSchema } from '@/lib/validations/snippet.schema';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { UpdateSnippetSchema } from '@/lib/validations/snippet.schema';
-import { SnippetsService } from '@/lib/services/snippets.service';
 
 export async function updateSnippet(id: string, prevState: unknown, formData: FormData) {
     const raw = formData.get('__json');

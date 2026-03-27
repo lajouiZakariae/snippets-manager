@@ -1,8 +1,8 @@
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { SnippetDetail } from '@/components/snippets/snippet-detail';
+import { Button } from '@/components/ui/button';
 import { SnippetsService } from '@/lib/services/snippets.service';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 type Props = {
@@ -20,7 +20,7 @@ export default async function SnippetDetailPage({ params }: Props) {
     }
 
     return (
-        <div className="space-y-6 max-w-3xl">
+        <div className="max-w-3xl space-y-6">
             <Button asChild variant="ghost" size="sm" className="-ml-2">
                 <Link href="/protected/snippets">
                     <ArrowLeft className="mr-2 h-4 w-4" />
