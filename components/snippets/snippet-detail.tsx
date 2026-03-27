@@ -18,7 +18,6 @@ async function highlightBlock(code: string, language: string): Promise<string> {
         return await codeToHtml(code, {
             lang: language,
             themes: { light: 'github-light', dark: 'github-dark' },
-            defaultColor: false,
         });
     } catch {
         // Fallback: render as plain text if language is not supported
