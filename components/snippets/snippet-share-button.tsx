@@ -2,13 +2,14 @@
 
 import { setSnippetVisibility } from "@/actions/set-snippet-visibility";
 import { Button } from "@/components/ui/button";
+import { SnippetVisibility } from "@/lib/enums";
 import { buildShareUrl, copyToClipboard } from "@/lib/utils";
 import { Check, Copy, Globe, Lock } from "lucide-react";
 import { useState, useTransition } from "react";
 
 type Props = {
   snippetId: string;
-  visibility: "private" | "public";
+  visibility: "private" | SnippetVisibility.PUBLIC;
   shareToken: string;
 };
 
@@ -20,12 +21,12 @@ export function SnippetShareButton({
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
 
-  const isPublic = visibility === "public";
+  const isPublic = visibility === SnippetVisibility.PUBLIC;
   const shareUrl = buildShareUrl(shareToken);
 
   function toggleVisibility() {
     startTransition(async () => {
-      await setSnippetVisibility(snippetId, isPublic ? "private" : "public");
+      await setSnippetVisibility(snippetId, isPublic ? SnippetVisibility.PRIVATE : SnippetVisibility.PUBLIC);
     });
   }
 

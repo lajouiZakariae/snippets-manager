@@ -32,6 +32,7 @@ export async function SnippetDetail({ snippet }: Props) {
             ))}
           </div>
         </div>
+
         <div className="flex shrink-0 flex-wrap gap-2">
           <SnippetShareButton
             snippetId={snippet.id}

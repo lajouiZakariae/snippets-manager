@@ -15,6 +15,7 @@ import { Eye, Link, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { DeleteSnippetDialog } from "./delete-snippet-dialog";
+import { SnippetVisibility } from "@/lib/enums";
 
 type Props = {
   snippet: CodeSnippetSummary;
@@ -27,9 +28,9 @@ export function SnippetCardMenu({ snippet, onDeleteStart }: Props) {
   const [, startTransition] = useTransition();
 
   function handleShare() {
-    if (snippet.visibility === "private") {
+    if (snippet.visibility === SnippetVisibility.PRIVATE) {
       startTransition(async () => {
-        await setSnippetVisibility(snippet.id, "public");
+        await setSnippetVisibility(snippet.id, SnippetVisibility.PUBLIC);
         copyToClipboard(buildShareUrl(snippet.share_token));
       });
     } else {

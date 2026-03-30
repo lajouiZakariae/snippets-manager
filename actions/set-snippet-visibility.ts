@@ -1,11 +1,12 @@
 "use server";
 
+import { SnippetVisibility } from "@/lib/enums";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export async function setSnippetVisibility(
   id: string,
-  visibility: "private" | "public",
+  visibility: SnippetVisibility,
 ) {
   const supabase = await createClient();
 
