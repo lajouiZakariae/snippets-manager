@@ -1,7 +1,9 @@
+import { CloneSnippetButton } from "@/components/snippets/clone-snippet-button";
 import { SnippetCodeBlock } from "@/components/snippets/snippet-code-block";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { AuthUserService } from "@/lib/services/auth-user-service";
 import { SnippetsService } from "@/lib/services/snippets.service";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
@@ -13,6 +15,8 @@ type Props = {
 
 export default async function SharedSnippetPage({ params }: Props) {
   const { token } = await params;
+
+  const user = await AuthUserService.getAuthUser();
 
   let snippet;
   try {
@@ -31,22 +35,27 @@ export default async function SharedSnippetPage({ params }: Props) {
         <span className="font-semibold text-foreground">Snippets Manager</span>
         {" — "}
         <Button asChild variant="link" size="sm" className="h-auto p-0 text-sm">
-          <Link href="/auth/sign-up">Create your own →</Link>
+          <Link href="/protected/snippets/new">Create your own →</Link>
         </Button>
       </div>
 
       <div className="mx-auto max-w-4xl px-4 py-10 space-y-6">
         {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight break-words">
-            {snippet.title}
-          </h1>
-          <div className="flex flex-wrap gap-1">
-            {snippet.tags.map((tag) => (
-              <Badge key={tag.id} variant="outline">
-                {tag.title}
-              </Badge>
-            ))}
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1 space-y-2">
+            <h1 className="text-2xl font-bold tracking-tight break-words">
+              {snippet.title}
+            </h1>
+            <div className="flex flex-wrap gap-1">
+              {snippet.tags.map((tag) => (
+                <Badge key={tag.id} variant="outline">
+                  {tag.title}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          <div className="flex shrink-0 flex-wrap gap-2">
+            <CloneSnippetButton shareToken={token} isAuthenticated={!!user} />
           </div>
         </div>
 
