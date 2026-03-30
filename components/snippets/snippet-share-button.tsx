@@ -1,0 +1,84 @@
+"use client";
+
+import { setSnippetVisibility } from "@/actions/set-snippet-visibility";
+import { Button } from "@/components/ui/button";
+import { Check, Copy, Globe, Lock } from "lucide-react";
+import { useState, useTransition } from "react";
+
+type Props = {
+  snippetId: string;
+  visibility: "private" | "public";
+  shareToken: string;
+};
+
+export function SnippetShareButton({
+  snippetId,
+  visibility,
+  shareToken,
+}: Props) {
+  const [isPending, startTransition] = useTransition();
+  const [copied, setCopied] = useState(false);
+
+  const isPublic = visibility === "public";
+  const shareUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/shared/${shareToken}`
+      : `/shared/${shareToken}`;
+
+  function toggleVisibility() {
+    startTransition(async () => {
+      await setSnippetVisibility(snippetId, isPublic ? "private" : "public");
+    });
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={toggleVisibility}
+        disabled={isPending}
+        aria-label={isPublic ? "Make snippet private" : "Make snippet public"}
+      >
+        {isPublic ? (
+          <>
+            <Globe className="h-4 w-4 text-green-500" />
+            Public
+          </>
+        ) : (
+          <>
+            <Lock className="h-4 w-4" />
+            Private
+          </>
+        )}
+      </Button>
+
+      {isPublic && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={copyLink}
+          aria-label="Copy share link"
+        >
+          {copied ? (
+            <>
+              <Check className="h-4 w-4 text-green-500" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="h-4 w-4" />
+              Copy link
+            </>
+          )}
+        </Button>
+      )}
+    </div>
+  );
+}
