@@ -10,6 +10,7 @@ import type {
 } from "@/lib/validations/snippet.schema";
 import { BlocksService } from "./blocks.service";
 import { TagsService } from "./tags.service";
+import { AuthUserService } from "./auth-user-service";
 
 export class SnippetsService {
   static async getAll(
@@ -30,6 +31,7 @@ export class SnippetsService {
                 code_blocks ( language )
             `,
       )
+      .eq("user_id", authUser.sub)
       .order("created_at", { ascending: false });
 
     if (filters.title) {
@@ -77,6 +79,8 @@ export class SnippetsService {
   }
 
   static async getById(id: string): Promise<CodeSnippet> {
+    const authUser = await AuthUserService.getAuthUserOrRedirect();
+
     const supabase = await createClient();
 
     const { data, error } = await supabase
@@ -92,6 +96,7 @@ export class SnippetsService {
                 code_blocks ( id, snippet_id, title, description, code, language, position, created_at )
             `,
       )
+      .eq("user_id", authUser.sub)
       .eq("id", id)
       .single();
 
