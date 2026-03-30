@@ -16,6 +16,8 @@ export class SnippetsService {
   static async getAll(
     filters: SnippetFilters = {},
   ): Promise<CodeSnippetSummary[]> {
+    const authUser = await AuthUserService.getAuthUserOrRedirect();
+
     const supabase = await createClient();
 
     let query = supabase
@@ -87,7 +89,7 @@ export class SnippetsService {
       .from("code_snippets")
       .select(
         `
-                id,
+        id,
                 title,
                 created_at,
                 visibility,
