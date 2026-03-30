@@ -1,3 +1,5 @@
+import { SnippetVisibility } from "./enums";
+
 export type Tag = {
   id: string;
   title: string;
@@ -19,7 +21,7 @@ export type CodeSnippet = {
   id: string;
   title: string;
   created_at: string;
-  visibility: "private" | "public";
+  visibility: SnippetVisibility;
   share_token: string;
   tags: Tag[];
   code_blocks: CodeBlock[];
@@ -30,7 +32,7 @@ export type CodeSnippetSummary = {
   id: string;
   title: string;
   created_at: string;
-  visibility: "private" | "public";
+  visibility: SnippetVisibility;
   share_token: string;
   tags: Tag[];
   block_count: number;
