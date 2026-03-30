@@ -2,6 +2,7 @@
 
 import { setSnippetVisibility } from "@/actions/set-snippet-visibility";
 import { Button } from "@/components/ui/button";
+import { buildShareUrl, copyToClipboard } from "@/lib/utils";
 import { Check, Copy, Globe, Lock } from "lucide-react";
 import { useState, useTransition } from "react";
 
@@ -20,10 +21,7 @@ export function SnippetShareButton({
   const [copied, setCopied] = useState(false);
 
   const isPublic = visibility === "public";
-  const shareUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/shared/${shareToken}`
-      : `/shared/${shareToken}`;
+  const shareUrl = buildShareUrl(shareToken);
 
   function toggleVisibility() {
     startTransition(async () => {
@@ -32,7 +30,7 @@ export function SnippetShareButton({
   }
 
   function copyLink() {
-    navigator.clipboard.writeText(shareUrl);
+    copyToClipboard(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }

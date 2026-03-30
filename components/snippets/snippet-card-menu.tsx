@@ -1,11 +1,13 @@
 'use client';
 
+import { setSnippetVisibility } from '@/actions/set-snippet-visibility';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { CodeSnippetSummary } from '@/lib/types';
-import { Eye, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { buildShareUrl, copyToClipboard } from '@/lib/utils';
+import { Eye, Link, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { DeleteSnippetDialog } from './delete-snippet-dialog';
 
 type Props = {
@@ -16,6 +18,18 @@ type Props = {
 export function SnippetCardMenu({ snippet, onDeleteStart }: Props) {
     const router = useRouter();
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [, startTransition] = useTransition();
+
+    function handleShare() {
+        if (snippet.visibility === 'private') {
+            startTransition(async () => {
+                await setSnippetVisibility(snippet.id, 'public');
+                copyToClipboard(buildShareUrl(snippet.share_token));
+            });
+        } else {
+            copyToClipboard(buildShareUrl(snippet.share_token));
+        }
+    }
 
     return (
         <>
@@ -33,6 +47,10 @@ export function SnippetCardMenu({ snippet, onDeleteStart }: Props) {
                     <DropdownMenuItem onClick={() => router.push(`/protected/snippets/${snippet.id}/edit`)}>
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleShare}>
+                        <Link className="mr-2 h-4 w-4" />
+                        Copy link
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteOpen(true)}>
