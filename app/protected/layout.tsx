@@ -1,5 +1,5 @@
 import Header from '@/components/layout/header';
-import { AuthUserService } from '@/services/auth-user-service';
+import { AuthUserService } from '@/lib/services/auth-user-service';
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
     await AuthUserService.getAuthUserOrRedirect();
