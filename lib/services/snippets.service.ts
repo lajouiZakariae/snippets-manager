@@ -161,7 +161,15 @@ export class SnippetsService {
   ): Promise<CodeSnippet> {
     const supabase = await createClient();
 
-    // Update snippet title
+    // Capture old tag IDs before replacing associations
+    const { data: oldPivotRows } = await supabase
+      .from("code_snippet_tags")
+      .select("tag_id")
+      .eq("snippet_id", id);
+
+    const oldTagIds = (oldPivotRows ?? []).map((r) => r.tag_id);
+
+    // Update snippet details
     const { error: updateError } = await supabase
       .from("code_snippets")
       .update({ title: input.title, visibility: input.visibility })
@@ -177,16 +185,24 @@ export class SnippetsService {
 
     if (deleteTagsError) throw new Error(deleteTagsError.message);
 
+    let newTagIds: string[] = [];
     if (input.tags && input.tags.length > 0) {
       const tags = await Promise.all(
         input.tags.map((t) => TagsService.upsert(t)),
       );
+      newTagIds = tags.map((t) => t.id);
       const pivotRows = tags.map((t) => ({ snippet_id: id, tag_id: t.id }));
       const { error: pivotError } = await supabase
         .from("code_snippet_tags")
         .insert(pivotRows);
       if (pivotError) throw new Error(pivotError.message);
     }
+
+    // Clean up tags that were removed from this snippet
+    const removedTagIds = oldTagIds.filter((id) => !newTagIds.includes(id));
+    await Promise.all(
+      removedTagIds.map((tagId) => TagsService.deleteIfOrphan(tagId)),
+    );
 
     // Replace blocks
     await BlocksService.replaceForSnippet(id, input.blocks);
@@ -196,11 +212,23 @@ export class SnippetsService {
 
   static async delete(id: string): Promise<void> {
     const supabase = await createClient();
+
+    // Fetch tag IDs before deleting (cascade will remove pivot rows)
+    const { data: pivotRows } = await supabase
+      .from("code_snippet_tags")
+      .select("tag_id")
+      .eq("snippet_id", id);
+
+    const tagIds = (pivotRows ?? []).map((r) => r.tag_id);
+
     const { error } = await supabase
       .from("code_snippets")
       .delete()
       .eq("id", id);
     if (error) throw new Error(error.message);
+
+    // Clean up orphan tags
+    await Promise.all(tagIds.map((tagId) => TagsService.deleteIfOrphan(tagId)));
   }
 
   static async getDistinctLanguages(): Promise<string[]> {
